@@ -75,10 +75,32 @@ os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
 SVG(model_to_dot(cnn_net).create(prog='dot',format='svg'))
 
 #5 训练模型、保存和载入模型
-# cnn_net = load_model('cnn_net_model.h5')
-cnn_net.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
-cnn_net.fit(x_train,y_train,batch_size=batch_size,epochs=50,verbose=1,validation_split=0.2)
-cnn_net.save('cnn_net_model.h5')
+cnn_net = load_model('cnn_net_model.h5')
+# cnn_net.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
+# cnn_net.fit(x_train,y_train,batch_size=batch_size,epochs=50,verbose=1,validation_split=0.2)
+# cnn_net.save('cnn_net_model.h5')
+
+#6 生成提交的预测结果
+df = pd.read_csv("test.csv")
+x_valid = df.values.astype('float32')
+n_valid = x_valid.shape[0]
+x_valid = x_valid.reshape(n_valid,28,28,1)
+x_valid = x_valid/255
+yPred = cnn_net.predict_classes(x_valid,batch_size=32,verbose=1)
+np.savetxt('mnist_output.csv',np.c_[range(1,len(yPred)+1),yPred],delimiter=',',header='ImageId,Label',comments='',fmt='%d')
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
